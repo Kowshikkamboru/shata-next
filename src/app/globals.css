@@ -1,26 +1,77 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: #FAFAF7;
+  --color-surface: #F3EFE8;
+  --color-surface2: #EDE8DF;
+  --color-card-bg: #1C1209;
+  --color-card-warm: #2A1A08;
+  --color-ink: #1A1009;
+  --color-ink-mid: rgba(26,16,9,0.55);
+  --color-ink-soft: rgba(26,16,9,0.32);
+  --color-ink-dim: rgba(26,16,9,0.16);
+  --color-accent: #FF6B2C;
+  --color-accent-glow: rgba(255,107,44,0.2);
+  --color-accent-dim: rgba(255,107,44,0.1);
+  --color-gold: #C8922A;
+  --color-gold-soft: rgba(200,146,42,0.12);
+  --color-cream: #F7F2EB;
+  --font-heading: var(--font-playfair);
+  --font-body: var(--font-dm-sans);
+  --font-mono: var(--font-space-grotesk);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Smooth scrolling handled by Lenis */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body), sans-serif;
+  overflow-x: hidden;
+}
+
+/* Noise texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.45;
+}
+
+/* Selection highlight */
+::selection {
+  background: rgba(255,107,44,0.15);
+  color: var(--color-ink);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(26,16,9,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(26,16,9,0.25); }
+
+/* Strip animation */
+@keyframes scrollLeft {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Cursor (desktop only) */
+@media (pointer: fine) {
+  body { cursor: none; }
+}
+@media (pointer: coarse) {
+  .custom-cursor, .cursor-ring { display: none !important; }
 }
