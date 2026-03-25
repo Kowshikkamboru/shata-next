@@ -108,12 +108,12 @@ export function Hero() {
           animate={inView ? "show" : "hidden"}
           className="font-[var(--font-heading)] text-balance text-[clamp(3rem,8vw,7.1rem)] font-bold leading-[1.03] md:leading-[0.96] tracking-[-2px] mb-8 md:mb-6 max-w-[1120px] mx-auto"
         >
-          <span className="block overflow-hidden">
+          <span className="block overflow-hidden pb-[0.1em]">
             <motion.span variants={lineReveal} className="inline-block">
               Where Every
             </motion.span>
           </span>
-          <span className="block overflow-hidden">
+          <span className="block overflow-hidden pb-[0.1em]">
             <motion.span
               variants={lineReveal}
               className="inline-block italic text-accent"
@@ -122,7 +122,7 @@ export function Hero() {
               Celebration
             </motion.span>
           </span>
-          <span className="block overflow-hidden">
+          <span className="block overflow-hidden pb-[0.1em]">
             <motion.span variants={lineReveal} className="inline-block">
               Becomes Legend
             </motion.span>
