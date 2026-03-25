@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
+const APP_STORE_URL = "https://apps.apple.com/in/app/shata/id6743954767";
+const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.shata.user&hl=en_IN";
+
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -46,7 +49,7 @@ export function Navbar() {
           </span>
         </Link>
 
-        <ul className="hidden md:flex items-center gap-10 list-none">
+        <ul className="hidden lg:flex items-center gap-7 xl:gap-10 list-none">
           {navLinks.map((link) => (
             <li key={link.href}>
               <Link
@@ -60,21 +63,30 @@ export function Navbar() {
         </ul>
 
         <div className="flex items-center gap-2">
-          <Link
-            href="#"
-            className="hidden md:inline-block font-[var(--font-mono)] text-[10.5px] tracking-[1.2px] uppercase text-ink-mid no-underline px-3.5 py-2 hover:text-ink transition-colors"
-          >
-            Log In
-          </Link>
-          <Link
-            href="#contact"
-            className="hidden md:inline-flex items-center gap-1.5 font-[var(--font-mono)] text-[10.5px] font-bold tracking-[1.2px] uppercase text-white bg-ink border-none px-5 py-2.5 rounded-[5px] no-underline hover:bg-[#2c1a06] active:scale-[.97] transition-all"
-          >
-            Book Now →
-          </Link>
+          <div className="hidden lg:flex items-center gap-2">
+            <span className="hidden xl:inline font-[var(--font-mono)] text-[10px] tracking-[1.3px] uppercase text-ink-mid">
+              Download
+            </span>
+            <a
+              href={APP_STORE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 font-[var(--font-mono)] text-[10px] font-bold tracking-[1.2px] uppercase text-white bg-ink border-none px-4 py-2.5 rounded-[5px] no-underline hover:bg-[#2c1a06] active:scale-[.97] transition-all"
+            >
+              App Store
+            </a>
+            <a
+              href={PLAY_STORE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 font-[var(--font-mono)] text-[10px] font-bold tracking-[1.2px] uppercase text-ink border border-[rgba(60,35,10,0.14)] bg-[rgba(255,255,255,0.65)] px-4 py-2.5 rounded-[5px] no-underline hover:border-[rgba(60,35,10,0.28)] hover:bg-white transition-all"
+            >
+              Google Play
+            </a>
+          </div>
           <button
             onClick={() => setMobileOpen(true)}
-            className="flex md:hidden flex-col gap-1 p-2 rounded-md border border-[rgba(60,35,10,0.14)] bg-transparent"
+            className="flex lg:hidden flex-col gap-1 p-2 rounded-md border border-[rgba(60,35,10,0.14)] bg-transparent"
             aria-label="Open menu"
           >
             <span className="block w-[17px] h-[1.5px] bg-ink-mid rounded-full" />
@@ -115,6 +127,36 @@ export function Navbar() {
                 </Link>
               </motion.div>
             ))}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: navLinks.length * 0.1 }}
+              className="flex flex-col items-center gap-3 pt-4"
+            >
+              <span className="font-[var(--font-mono)] text-[10px] tracking-[1.6px] uppercase text-ink-mid">
+                Download the app
+              </span>
+              <div className="flex flex-col items-center gap-3">
+                <a
+                  href={APP_STORE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileOpen(false)}
+                  className="inline-flex min-w-[210px] justify-center items-center font-[var(--font-mono)] text-[11px] font-bold tracking-[1.4px] uppercase text-white bg-ink px-5 py-3 rounded-[6px] no-underline"
+                >
+                  Download on App Store
+                </a>
+                <a
+                  href={PLAY_STORE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileOpen(false)}
+                  className="inline-flex min-w-[210px] justify-center items-center font-[var(--font-mono)] text-[11px] font-bold tracking-[1.4px] uppercase text-ink border border-[rgba(60,35,10,0.14)] bg-white px-5 py-3 rounded-[6px] no-underline"
+                >
+                  Get it on Google Play
+                </a>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

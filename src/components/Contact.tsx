@@ -13,7 +13,7 @@ export function Contact() {
   const inView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
-    <section id="contact" className="py-32 text-center relative overflow-hidden" ref={ref}>
+    <section id="contact" className="py-24 text-center relative overflow-hidden" ref={ref}>
       {/* Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[640px] h-[380px] pointer-events-none"
         style={{ background: "radial-gradient(ellipse, rgba(255,107,44,0.06), transparent 70%)" }}

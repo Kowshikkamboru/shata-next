@@ -29,7 +29,7 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center justify-center text-center pt-[62px] overflow-hidden"
+      className="relative min-h-screen flex items-center justify-center text-center pt-[88px] pb-14 md:pb-0 overflow-hidden"
       ref={ref}
     >
       {/* Dot Grid */}
@@ -86,7 +86,7 @@ export function Hero() {
         ))}
       </div>
 
-      <div className="container relative z-[2] max-w-[1160px] mx-auto px-[clamp(1.5rem,5vw,3rem)]">
+      <div className="container relative z-[2] max-w-[1240px] mx-auto px-[clamp(1.5rem,5vw,3rem)]">
         {/* Badge */}
         <motion.div
           variants={fadeUp}
@@ -106,7 +106,7 @@ export function Hero() {
           variants={container}
           initial="hidden"
           animate={inView ? "show" : "hidden"}
-          className="font-[var(--font-heading)] text-[clamp(3.2rem,8.5vw,7.5rem)] font-bold leading-[0.95] tracking-[-2px] mb-5 max-w-[900px] mx-auto"
+          className="font-[var(--font-heading)] text-balance text-[clamp(3rem,8vw,7.1rem)] font-bold leading-[1.03] md:leading-[0.96] tracking-[-2px] mb-8 md:mb-6 max-w-[1120px] mx-auto"
         >
           <span className="block overflow-hidden">
             <motion.span variants={lineReveal} className="inline-block">
@@ -135,7 +135,7 @@ export function Hero() {
           initial="hidden"
           animate={inView ? "show" : "hidden"}
           transition={{ delay: 1.15 }}
-          className="font-[var(--font-body)] text-[clamp(1rem,2vw,1.2rem)] text-ink-mid max-w-[520px] mx-auto mb-11 leading-relaxed font-light"
+          className="font-[var(--font-body)] text-balance text-[clamp(1rem,2vw,1.2rem)] text-ink-mid max-w-[720px] mx-auto mb-11 leading-relaxed font-light"
         >
           Book photographers, caterers, decorators &amp; event planners across
           Hyderabad, Vizag, Bengaluru &amp; 76+ cities — all in one seamless

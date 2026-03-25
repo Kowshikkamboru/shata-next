@@ -6,10 +6,17 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const clamp = (value: number, min = 0, max = 1) =>
+  Math.min(Math.max(value, min), max);
+
+const mix = (from: number, to: number, progress: number) =>
+  from + (to - from) * progress;
+
 export function CinematicCard() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
-  const bgTextRef = useRef<HTMLDivElement>(null);
+  const darkIntroRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<SVGCircleElement>(null);
@@ -41,17 +48,22 @@ export function CinematicCard() {
 
   useEffect(() => {
     const section = sectionRef.current;
+    const stage = stageRef.current;
     const card = cardRef.current;
-    const bgText = bgTextRef.current;
+    const darkIntro = darkIntroRef.current;
     const content = contentRef.current;
     const cta = ctaRef.current;
-    if (!section || !card || !bgText || !content || !cta) return;
+    const badge1 = badge1Ref.current;
+    const badge2 = badge2Ref.current;
+    if (!section || !stage || !card || !darkIntro || !content || !cta || !badge1 || !badge2) {
+      return;
+    }
 
     const isMob = window.innerWidth < 900;
-    const startW = isMob ? 88 : 80;
-    const startH = isMob ? 88 : 80;
+    const startW = isMob ? 88 : 78;
+    const startH = isMob ? 72 : 78;
 
-    ScrollTrigger.create({
+    const trigger = ScrollTrigger.create({
       trigger: section,
       start: "top top",
       end: "bottom bottom",
@@ -59,54 +71,80 @@ export function CinematicCard() {
       onUpdate: (self) => {
         const pct = self.progress;
 
-        // Phase 0–0.18: bg text + card slide in
-        const p0 = Math.min(pct / 0.18, 1);
-        bgText.style.transform = `scale(${1 + p0 * 0.12})`;
-        bgText.style.opacity = String(1 - p0 * 0.85);
-        bgText.style.filter = `blur(${p0 * 16}px)`;
+        /* ── scroll phases (compressed timeline) ── */
+        const darkToLight    = clamp((pct - 0.28) / 0.16);   // 0.28→0.44
+        const darkIntroOp    = clamp(1 - (pct - 0.22) / 0.16); // fades 0.22→0.38
+        const enterCard      = clamp((pct - 0.32) / 0.18);   // 0.32→0.50
+        const contentReveal  = clamp((pct - 0.40) / 0.10);   // 0.40→0.50
+        const badgeReveal    = clamp((pct - 0.48) / 0.08);   // 0.48→0.56
+        const ctaReveal      = clamp((pct - 0.72) / 0.06);   // 0.72→0.78
+        const cardCollapse   = clamp((pct - 0.64) / 0.16);   // 0.64→0.80
 
-        if (pct < 0.18) {
-          const slide = 1 - p0;
-          card.style.transform = `translateY(${slide * 110}vh)`;
-          card.style.width = startW + "vw";
-          card.style.height = startH + "vh";
-          card.style.borderRadius = isMob ? "28px" : "36px";
-          content.classList.remove("visible");
-        } else if (pct < 0.45) {
-          const p1 = (pct - 0.18) / 0.27;
-          card.style.transform = "translateY(0)";
-          card.style.width = startW + p1 * (100 - startW) + "vw";
-          card.style.height = startH + p1 * (100 - startH) + "vh";
-          const br = isMob ? 28 - p1 * 28 : 36 - p1 * 36;
-          card.style.borderRadius = br + "px";
-          content.classList.add("visible");
-          cta.classList.remove("show");
-          if (p1 > 0.5) animateRing();
-        } else if (pct < 0.75) {
-          card.style.width = "100vw";
-          card.style.height = "100vh";
-          card.style.borderRadius = "0px";
-          card.style.transform = "translateY(0)";
-          content.classList.add("visible");
-          cta.classList.remove("show");
-          animateRing();
-        } else if (pct < 0.9) {
-          const p2 = (pct - 0.75) / 0.15;
-          card.style.width = 100 - p2 * (100 - startW) + "vw";
-          card.style.height = 100 - p2 * (100 - startH) + "vh";
-          card.style.borderRadius = p2 * (isMob ? 28 : 36) + "px";
-          card.style.transform = "translateY(0)";
-          content.style.opacity = String(1 - p2);
-          cta.classList.toggle("show", p2 > 0.35);
-        } else {
-          const p3 = (pct - 0.9) / 0.1;
-          card.style.transform = `translateY(-${p3 * 110}vh)`;
-          card.style.width = startW + "vw";
-          card.style.height = startH + "vh";
-          card.style.borderRadius = isMob ? "28px" : "36px";
+        const darkRed   = Math.round(mix(16, 250, darkToLight));
+        const darkGreen = Math.round(mix(10, 248, darkToLight));
+        const darkBlue  = Math.round(mix(6, 244, darkToLight));
+        const warmGlow  = mix(0.2, 0.08, darkToLight);
+
+        stage.style.background = `radial-gradient(circle at 50% 34%, rgba(255,107,44,${warmGlow}) 0%, transparent 34%), linear-gradient(180deg, rgba(${darkRed},${darkGreen},${darkBlue},1) 0%, rgba(${Math.round(mix(12, 245, darkToLight))},${Math.round(mix(7, 245, darkToLight))},${Math.round(mix(4, 240, darkToLight))},1) 100%)`;
+
+        darkIntro.style.opacity = String(darkIntroOp);
+        darkIntro.style.transform = `translateY(${mix(0, -34, pct)}px) scale(${mix(1, 0.96, pct)})`;
+        darkIntro.style.filter = `blur(${mix(0, 4, clamp((pct - 0.30) / 0.08))}px)`;
+
+        /* Phase 1 — before card enters */
+        if (pct < 0.32) {
+          card.style.transform = "translateY(115vh)";
+          card.style.width = `${startW}vw`;
+          card.style.height = `${startH}vh`;
+          card.style.borderRadius = isMob ? "30px" : "38px";
           content.style.opacity = "0";
-          cta.classList.remove("show");
+          content.style.transform = "translateY(26px)";
+          cta.style.opacity = "0";
+          cta.style.transform = "translateY(30px)";
+          cta.style.pointerEvents = "none";
+          badge1.style.opacity = "0";
+          badge1.style.transform = "translateY(24px)";
+          badge2.style.opacity = "0";
+          badge2.style.transform = "translateY(24px)";
+          return;
         }
+
+        /* Phase 2 — card entering + content / badge reveal */
+        if (pct < 0.64) {
+          card.style.transform = `translateY(${mix(115, 0, enterCard)}vh)`;
+          card.style.width = `${mix(startW, 100, enterCard)}vw`;
+          card.style.height = `${mix(startH, 100, enterCard)}vh`;
+          card.style.borderRadius = `${mix(isMob ? 30 : 38, 0, enterCard)}px`;
+          content.style.opacity = String(contentReveal);
+          content.style.transform = `translateY(${mix(26, 0, contentReveal)}px)`;
+          cta.style.opacity = "0";
+          cta.style.transform = "translateY(30px)";
+          cta.style.pointerEvents = "none";
+          badge1.style.opacity = String(badgeReveal);
+          badge1.style.transform = `translateY(${mix(20, 0, badgeReveal)}px)`;
+          const badge2Rev = clamp((pct - 0.52) / 0.08);
+          badge2.style.opacity = String(badge2Rev);
+          badge2.style.transform = `translateY(${mix(20, 0, badge2Rev)}px)`;
+          if (contentReveal > 0.45) animateRing();
+          return;
+        }
+
+        /* Phase 3 — card collapse + CTA reveal, then hold */
+        card.style.transform = "translateY(0)";
+        card.style.width = `${mix(100, startW, cardCollapse)}vw`;
+        card.style.height = `${mix(100, startH, cardCollapse)}vh`;
+        card.style.borderRadius = `${mix(0, isMob ? 30 : 38, cardCollapse)}px`;
+        const contentOp = 1 - clamp((pct - 0.68) / 0.08);
+        content.style.opacity = String(contentOp);
+        content.style.transform = `translateY(${mix(0, -18, clamp((pct - 0.68) / 0.08))}px)`;
+        cta.style.opacity = String(ctaReveal);
+        cta.style.transform = `translateY(${mix(24, 0, ctaReveal)}px)`;
+        cta.style.pointerEvents = ctaReveal > 0.65 ? "auto" : "none";
+        const badgeOut = 1 - cardCollapse;
+        badge1.style.opacity = String(badgeOut);
+        badge1.style.transform = `translateY(${mix(0, -18, cardCollapse)}px)`;
+        badge2.style.opacity = String(badgeOut);
+        badge2.style.transform = `translateY(${mix(0, -18, cardCollapse)}px)`;
       },
     });
 
@@ -130,35 +168,48 @@ export function CinematicCard() {
     document.addEventListener("mousemove", onPhoneTilt);
 
     return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
+      trigger.kill();
       card.removeEventListener("mousemove", onCardMove);
       document.removeEventListener("mousemove", onPhoneTilt);
     };
   }, [animateRing]);
 
   return (
-    <section id="cinematic" ref={sectionRef} className="relative h-[600vh]">
-      <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center">
-        {/* Background Text */}
+    <section id="cinematic" ref={sectionRef} className="relative h-[360vh]">
+      <div
+        ref={stageRef}
+        className="sticky top-0 h-screen overflow-hidden flex items-center justify-center"
+      >
+        <div className="absolute inset-0 pointer-events-none opacity-60"
+          style={{
+            backgroundImage: "radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px)",
+            backgroundSize: "30px 30px",
+            maskImage: "radial-gradient(circle at center, black 48%, transparent 100%)",
+            WebkitMaskImage: "radial-gradient(circle at center, black 48%, transparent 100%)",
+          }}
+        />
+
+        {/* Dark Intro */}
         <div
-          ref={bgTextRef}
-          className="absolute inset-0 z-[1] flex flex-col items-center justify-center text-center p-4"
+          ref={darkIntroRef}
+          className="absolute inset-0 z-[1] flex flex-col items-center justify-start text-center px-6 pt-[16vh] md:pt-[18vh]"
           style={{ willChange: "transform, opacity" }}
         >
-          <div className="font-[var(--font-heading)] text-[clamp(2.8rem,6vw,5.5rem)] font-semibold leading-[0.95] tracking-[-2px] text-ink">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-6 border border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.05)]">
+            <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
+            <span className="font-[var(--font-mono)] text-[10px] tracking-[1.8px] uppercase text-[rgba(255,235,215,0.65)]">
+              Every booking, under control
+            </span>
+          </div>
+          <div className="font-[var(--font-heading)] text-[clamp(2.9rem,6.2vw,5.9rem)] font-semibold leading-[0.96] tracking-[-2px] text-white">
             Your event,
           </div>
-          <div
-            className="font-[var(--font-heading)] text-[clamp(2.8rem,6vw,5.5rem)] font-bold italic leading-[0.95] tracking-[-2px]"
-            style={{
-              background: "linear-gradient(180deg, var(--color-ink) 0%, rgba(26,16,9,0.4) 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
-          >
+          <div className="font-[var(--font-heading)] text-[clamp(2.9rem,6.2vw,5.9rem)] font-bold italic leading-[0.96] tracking-[-2px] text-[rgba(255,237,221,0.88)]">
             expertly handled.
           </div>
+          <p className="max-w-[720px] mt-6 font-[var(--font-body)] text-[clamp(.98rem,1.8vw,1.15rem)] leading-relaxed text-[rgba(255,230,205,0.62)]">
+            Verified photographers, caterers, decorators and planners, all coordinated in one polished experience from discovery to event day.
+          </p>
         </div>
 
         {/* The Card */}
@@ -188,7 +239,7 @@ export function CinematicCard() {
           <div
             ref={contentRef}
             className="relative z-[5] w-full h-full grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center px-[clamp(1.5rem,4vw,3.5rem)] gap-[clamp(1rem,3vw,2.5rem)] opacity-0 transition-opacity duration-400"
-            style={{ transitionDelay: "0.1s" }}
+            style={{ transitionDelay: "0.1s", willChange: "opacity, transform" }}
           >
             {/* Left Text */}
             <div className="hidden md:block">
@@ -343,7 +394,7 @@ export function CinematicCard() {
               {/* Floating Badges */}
               <div
                 ref={badge1Ref}
-                className="f-badge absolute z-30 top-[15%] left-[-90px] flex items-center gap-2.5 px-3.5 py-2.5 rounded-[14px] opacity-0 translate-y-5 transition-all duration-600"
+                className="absolute z-30 top-[15%] left-[-90px] flex items-center gap-2.5 px-3.5 py-2.5 rounded-[14px] opacity-0 transition-all duration-600"
                 style={{
                   background:
                     "linear-gradient(135deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.02) 100%)",
@@ -374,7 +425,7 @@ export function CinematicCard() {
 
               <div
                 ref={badge2Ref}
-                className="f-badge absolute z-30 bottom-[22%] right-[-90px] flex items-center gap-2.5 px-3.5 py-2.5 rounded-[14px] opacity-0 translate-y-5 transition-all duration-600"
+                className="absolute z-30 bottom-[22%] right-[-90px] flex items-center gap-2.5 px-3.5 py-2.5 rounded-[14px] opacity-0 transition-all duration-600"
                 style={{
                   background:
                     "linear-gradient(135deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.02) 100%)",
@@ -432,6 +483,7 @@ export function CinematicCard() {
           <div
             ref={ctaRef}
             className="absolute inset-0 z-[8] flex flex-col items-center justify-center text-center p-8 opacity-0 pointer-events-none transition-opacity duration-500"
+            style={{ willChange: "opacity, transform" }}
           >
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-6 border border-[rgba(255,255,255,0.12)]"
               style={{ background: "rgba(255,255,255,0.04)" }}

@@ -46,7 +46,7 @@ export function Services() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="services" className="relative py-32 pb-24" ref={ref}>
+    <section id="services" className="relative py-24" ref={ref}>
       {/* Glow */}
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[260px] pointer-events-none"
