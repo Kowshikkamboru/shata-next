@@ -456,17 +456,9 @@ export function CinematicCard() {
             </div>
 
             {/* Right Brand */}
-            <div className="md:block order-first md:order-last">
+            <div className="md:block order-first md:order-last pr-[clamp(1.5rem,4vw,2.5rem)] mr-[clamp(4.5rem,4vw,4.5rem)]">
               <h2
-                className="font-[var(--font-heading)] text-[clamp(3rem,7vw,6.5rem)] font-bold italic text-right tracking-[-2px] leading-[.9]"
-                style={{
-                  background: "linear-gradient(180deg, #fff 0%, #a0806a 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  filter:
-                    "drop-shadow(0 12px 24px rgba(0,0,0,0.7)) drop-shadow(0 4px 8px rgba(0,0,0,0.5))",
-                }}
+                className="font-[var(--font-heading)] text-[clamp(3rem,7vw,6.5rem)] font-bold italic text-right tracking-[-2px] leading-[.9] ml-[clamp(0.5rem,1.5vw,1rem)] text-white"
               >
                 Shata
                 <br />
@@ -482,7 +474,7 @@ export function CinematicCard() {
           {/* CTA Layer */}
           <div
             ref={ctaRef}
-            className="absolute inset-0 z-[8] flex flex-col items-center justify-center text-center p-8 opacity-0 pointer-events-none transition-opacity duration-500"
+            className="absolute inset-0 z-[8] flex flex-col items-center justify-center text-center px-[clamp(2rem,5vw,3.5rem)] py-8 opacity-0 pointer-events-none transition-opacity duration-500"
             style={{ willChange: "opacity, transform" }}
           >
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-6 border border-[rgba(255,255,255,0.12)]"
