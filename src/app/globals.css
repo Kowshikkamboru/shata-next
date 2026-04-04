@@ -32,11 +32,15 @@ html.lenis, html.lenis body {
   overscroll-behavior: contain;
 }
 
+html {
+  overflow-x: clip;
+}
+
 body {
   background: var(--color-bg);
   color: var(--color-ink);
   font-family: var(--font-body), sans-serif;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Noise texture overlay */
